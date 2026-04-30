@@ -41,35 +41,36 @@ public class Main {
 
         try {
             System.out.println();
-            System.out.print("Select car index (1-" + cars.size() + "): ");
-            String carIndexRaw = scanner.nextLine();
-            int carIndex = Integer.parseInt(carIndexRaw);
-
-            if (carIndex < 1 || carIndex > cars.size()) {
-                throw new IllegalArgumentException("Car index out of range");
-            }
-
-            Car selectedCar = cars.get(carIndex - 1);
-
             System.out.print("Enter rental days: ");
             String daysRaw = scanner.nextLine();
             int days = Integer.parseInt(daysRaw);
+
+            System.out.print("Enter distance: ");
+            String distanceRaw = scanner.nextLine();
+            double distance = Double.parseDouble(distanceRaw);
 
             System.out.print("Enter number of passengers: ");
             String passengersRaw = scanner.nextLine();
             int passengers = Integer.parseInt(passengersRaw);
 
-            if (!calculator.canFitPassengers(selectedCar, passengers)) {
-                throw new IllegalArgumentException("Selected car cannot fit the requested number of passengers");
+            RentalQuote[] bestQuotes = calculator.findBestCars(cars, days, distance, passengers);
+            if (bestQuotes.length == 0) {
+                throw new IllegalArgumentException("No available car can fit the requested number of passengers");
             }
 
-            RentalQuote quote = calculator.calculateQuote(selectedCar, days);
             System.out.println();
-            System.out.println("Quote Summary:");
-            System.out.println("Car: " + quote.getCar().getMake() + " " + quote.getCar().getModel());
-            System.out.println("Category: " + quote.getCar().getCategory());
-            System.out.println("Days: " + quote.getRentalDays());
-            System.out.println("Total Cost: " + quote.getTotalCost());
+            System.out.println("Best Option(s):");
+            for (RentalQuote quote : bestQuotes) {
+                System.out.println("Car: " + quote.getCar().getMake() + " " + quote.getCar().getModel());
+                System.out.println("Rental Category: " + quote.getCar().getCategory());
+                System.out.println("Days: " + quote.getRentalDays());
+                System.out.println("Distance: " + quote.getDistance());
+                System.out.println("Rental Cost: " + quote.getRentalCost());
+                System.out.println("Fuel Cost: " + quote.getFuelCost());
+                System.out.println("Total Cost: " + quote.getTotalCost());
+                System.out.println("Comfort: " + quote.getCar().getComfortLevel());
+                System.out.println("--------------------------------------------");
+            }
 
         } catch (NumberFormatException e) {
             System.out.println("Invalid number format. Please enter numeric values only.");
